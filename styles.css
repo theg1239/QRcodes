@@ -1,4 +1,3 @@
-/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -15,17 +14,15 @@ body {
     min-height: 100vh;
 }
 
-/* Container */
 .container {
     display: flex;
-    flex-wrap: wrap; /* Ensures that the layout wraps on smaller screens */
-    justify-content: center; /* Center the items */
+    flex-wrap: wrap; 
+    justify-content: center; 
     width: 90%;
     max-width: 1200px;
-    gap: 20px; /* Keep the gap between cards */
+    gap: 20px; 
 }
 
-/* Ensure cards do not resize */
 .card {
     background-color: #1e1e1e;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -34,9 +31,9 @@ body {
     display: flex;
     flex-direction: column;
     color: #f0f0f0;
-    width: 400px; /* Fixed width for the cards */
-    max-width: 100%; /* On smaller screens, cards will fit the container */
-    min-height: 500px; /* Ensure consistent height */
+    width: 400px; 
+    max-width: 100%;
+    min-height: 500px; 
     position: relative;
 }
 
@@ -142,13 +139,12 @@ textarea::placeholder {
 }
 
 .output-section {
-    width: 400px; /* Fixed width for the output section */
+    width: 400px; 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-/* QR Container */
 .qr-container {
     flex-grow: 1; 
     max-height: 400px; 
@@ -204,7 +200,6 @@ textarea::placeholder {
     border-radius: 10px;
 }
 
-/* Media Query for Smaller Screens */
 @media (max-width: 800px) {
     .container {
         flex-direction: column;
@@ -212,6 +207,6 @@ textarea::placeholder {
     }
     
     .card, .output-section {
-        width: 90%; /* Make it more fluid on small screens */
+        width: 90%;
     }
 }
