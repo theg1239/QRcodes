@@ -28,13 +28,12 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     }
 
     function createQrWithLogo(data, fileName, callback) {
-        // Increase the version and lower error correction level for longer URLs
-        const qr = qrcode(8, 'L');  // 'L' for low error correction level, version 8 for more capacity
+        const qr = qrcode(8, 'L');  
         qr.addData(data);
         qr.make();
         const qrCanvas = document.createElement('canvas');
         const ctx = qrCanvas.getContext('2d');
-        qrCanvas.width = 500; // Increase the size for better quality
+        qrCanvas.width = 500; 
         qrCanvas.height = 500;
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, qrCanvas.width, qrCanvas.height);
@@ -81,18 +80,18 @@ document.getElementById('generate-btn').addEventListener('click', function() {
             const qrItem = document.createElement('div');
             qrItem.classList.add('qr-item');
             
-            // QR Text
             const qrText = document.createElement('div');
             qrText.classList.add('qr-text');
             qrText.innerText = `QR ${index + 1}: ${line.trim()}`;
             
-            // QR Image
             const qrImage = document.createElement('img');
             qrImage.src = qrDataUrl;
     
             qrItem.appendChild(qrText);
             qrItem.appendChild(qrImage);
             outputSection.appendChild(qrItem);
+
+            qrCodes.push({ name: `QR_${index + 1}.png`, dataUrl: qrDataUrl });
         });
     });
 
