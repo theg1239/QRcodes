@@ -28,13 +28,14 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     }
 
     function createQrWithLogo(data, fileName, callback) {
-        const qr = qrcode(4, 'Q');  
+        // Increase the version and lower error correction level for longer URLs
+        const qr = qrcode(8, 'L');  // 'L' for low error correction level, version 8 for more capacity
         qr.addData(data);
         qr.make();
         const qrCanvas = document.createElement('canvas');
         const ctx = qrCanvas.getContext('2d');
-        qrCanvas.width = 200;
-        qrCanvas.height = 200;
+        qrCanvas.width = 500; // Increase the size for better quality
+        qrCanvas.height = 500;
         ctx.fillStyle = '#fff';
         ctx.fillRect(0, 0, qrCanvas.width, qrCanvas.height);
         const qrImage = new Image();
@@ -76,17 +77,22 @@ document.getElementById('generate-btn').addEventListener('click', function() {
     }
 
     lines.forEach((line, index) => {
-        createQrWithLogo(line.trim(), `QR_${index + 1}.png`, function(qrDataUrl) {
+        createQrWithLogo(line.trim(), `QR_${index + 1}.png`, function (qrDataUrl) {
             const qrItem = document.createElement('div');
             qrItem.classList.add('qr-item');
-            const label = document.createElement('div');
-            label.innerText = `QR ${index + 1}: ${line.trim()}`;
+            
+            // QR Text
+            const qrText = document.createElement('div');
+            qrText.classList.add('qr-text');
+            qrText.innerText = `QR ${index + 1}: ${line.trim()}`;
+            
+            // QR Image
             const qrImage = document.createElement('img');
             qrImage.src = qrDataUrl;
-            qrItem.appendChild(label);
+    
+            qrItem.appendChild(qrText);
             qrItem.appendChild(qrImage);
             outputSection.appendChild(qrItem);
-            qrCodes.push({ name: `QR_${index + 1}.png`, dataUrl: qrDataUrl });
         });
     });
 

@@ -1,3 +1,4 @@
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -6,23 +7,25 @@
 }
 
 body {
-    background-color: #181818; 
-    color: #f0f0f0;
+    background-color: #181818; /* Dark background */
+    color: #f0f0f0; /* Light text color */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
+/* Container */
 .container {
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     justify-content: space-between;
     width: 90%;
     max-width: 1200px;
-    gap: 20px; 
+    gap: 20px; /* Space between columns */
 }
 
+/* Main Card Styles */
 .card {
     background-color: #1e1e1e;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -31,10 +34,11 @@ body {
     display: flex;
     flex-direction: column;
     color: #f0f0f0;
-    width: 48%; 
+    width: 48%; /* Ensure equal width for both sections */
     position: relative;
 }
 
+/* Input Section */
 .input-section h2, .output-section h2 {
     font-size: 24px;
     margin-bottom: 15px;
@@ -57,6 +61,7 @@ textarea::placeholder {
     color: #a0a0a0;
 }
 
+/* Options Section */
 .options {
     margin-bottom: 15px;
 }
@@ -112,9 +117,6 @@ textarea::placeholder {
 }
 
 .btn-export {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
     background-color: #28a745;
     color: white;
     padding: 10px 20px;
@@ -122,7 +124,8 @@ textarea::placeholder {
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    width: 93%;
+    width: 100%;
+    margin-top: 15px;
 }
 
 .btn-export:disabled {
@@ -136,36 +139,65 @@ textarea::placeholder {
 /* Output Section */
 .output-section {
     width: 48%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .qr-container {
-    flex-grow: 1;
-    max-height: 300px;
-    overflow-y: auto;
+    flex-grow: 1; /* Grow to fill available space */
+    max-height: 400px; /* Set a fixed height to prevent resizing */
+    overflow-y: auto; /* Allow scrolling when content overflows */
     border: 1px solid #333;
     padding: 10px;
     border-radius: 8px;
     background-color: #2c2c2c;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: flex-end;
-}
-
-.qr-container .qr-item {
-    display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 10px;
+    gap: 10px;
 }
 
-.qr-container .qr-item img {
-    width: 120px;
-    height: 120px;
+/* QR Item */
+.qr-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e1e1e;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+/* QR Image Styling */
+.qr-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    margin-left: 10px;
     border: 1px solid #444;
     padding: 5px;
-    border-radius: 8px;
     background-color: #1e1e1e;
 }
 
+/* Long Link Styling */
+.qr-item .qr-text {
+    max-width: 70%; /* Ensure the text wraps nicely */
+    word-wrap: break-word;
+    font-size: 14px;
+    color: #f0f0f0;
+}
+
+/* Custom Scrollbar */
+.qr-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.qr-container::-webkit-scrollbar-thumb {
+    background-color: #444; /* Darker scrollbar */
+    border-radius: 10px; /* Rounded edges */
+}
+
+.qr-container::-webkit-scrollbar-track {
+    background-color: #2c2c2c; /* Match container background */
+    border-radius: 10px;
+}
