@@ -7,25 +7,25 @@
 }
 
 body {
-    background-color: #181818; /* Dark background */
-    color: #f0f0f0; /* Light text color */
+    background-color: #181818; 
+    color: #f0f0f0; 
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 /* Container */
 .container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-wrap: wrap; /* Ensures that the layout wraps on smaller screens */
+    justify-content: center; /* Center the items */
     width: 90%;
     max-width: 1200px;
-    gap: 20px; /* Space between columns */
+    gap: 20px; /* Keep the gap between cards */
 }
 
-/* Main Card Styles */
+/* Ensure cards do not resize */
 .card {
     background-color: #1e1e1e;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -34,11 +34,12 @@ body {
     display: flex;
     flex-direction: column;
     color: #f0f0f0;
-    width: 48%; /* Ensure equal width for both sections */
+    width: 400px; /* Fixed width for the cards */
+    max-width: 100%; /* On smaller screens, cards will fit the container */
+    min-height: 500px; /* Ensure consistent height */
     position: relative;
 }
 
-/* Input Section */
 .input-section h2, .output-section h2 {
     font-size: 24px;
     margin-bottom: 15px;
@@ -55,6 +56,7 @@ textarea {
     margin-bottom: 15px;
     background-color: #2c2c2c;
     color: #f0f0f0;
+    resize: none; 
 }
 
 textarea::placeholder {
@@ -102,6 +104,8 @@ textarea::placeholder {
     cursor: pointer;
     font-size: 16px;
     width: 100%;
+    transition: background-color 0.3s ease;
+    margin-top: 110px;
 }
 
 .btn-primary:hover, .btn-secondary:hover {
@@ -126,6 +130,7 @@ textarea::placeholder {
     font-size: 16px;
     width: 100%;
     margin-top: 15px;
+    transition: background-color 0.3s ease;
 }
 
 .btn-export:disabled {
@@ -136,18 +141,18 @@ textarea::placeholder {
     background-color: #218838;
 }
 
-/* Output Section */
 .output-section {
-    width: 48%;
+    width: 400px; /* Fixed width for the output section */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
+/* QR Container */
 .qr-container {
-    flex-grow: 1; /* Grow to fill available space */
-    max-height: 400px; /* Set a fixed height to prevent resizing */
-    overflow-y: auto; /* Allow scrolling when content overflows */
+    flex-grow: 1; 
+    max-height: 400px; 
+    overflow-y: auto; 
     border: 1px solid #333;
     padding: 10px;
     border-radius: 8px;
@@ -157,7 +162,6 @@ textarea::placeholder {
     gap: 10px;
 }
 
-/* QR Item */
 .qr-item {
     display: flex;
     justify-content: space-between;
@@ -168,7 +172,6 @@ textarea::placeholder {
     border: 1px solid #444;
 }
 
-/* QR Image Styling */
 .qr-item img {
     width: 100px;
     height: 100px;
@@ -179,9 +182,8 @@ textarea::placeholder {
     background-color: #1e1e1e;
 }
 
-/* Long Link Styling */
 .qr-item .qr-text {
-    max-width: 70%; /* Ensure the text wraps nicely */
+    max-width: 70%; 
     word-wrap: break-word;
     font-size: 14px;
     color: #f0f0f0;
@@ -193,11 +195,23 @@ textarea::placeholder {
 }
 
 .qr-container::-webkit-scrollbar-thumb {
-    background-color: #444; /* Darker scrollbar */
-    border-radius: 10px; /* Rounded edges */
+    background-color: #444; 
+    border-radius: 10px;
 }
 
 .qr-container::-webkit-scrollbar-track {
-    background-color: #2c2c2c; /* Match container background */
+    background-color: #2c2c2c; 
     border-radius: 10px;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 800px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .card, .output-section {
+        width: 90%; /* Make it more fluid on small screens */
+    }
 }
