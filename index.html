@@ -8,31 +8,31 @@
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <div class="input-section">
-                <h2>QR Code Generator</h2>
-                <textarea id="input-text" rows="5" placeholder="Enter links or text (one per line)..."></textarea>
-                
-                <div class="options">
-                    <div class="option-group">
-                        <label for="custom-qr">Number of Random QRs</label>
-                        <input type="number" id="custom-qr" placeholder="e.g. 5">
-                    </div>
-
-                    <div class="option-group">
-                        <label for="logo-upload">Upload Custom Image (Optional)</label>
-                        <input type="file" id="logo-upload" accept="image/*">
-                    </div>
+        <!-- Input Section -->
+        <div class="card input-section">
+            <h2>QR Code Generator</h2>
+            <textarea id="input-text" rows="5" placeholder="Enter links or text (one per line)..."></textarea>
+            
+            <div class="options">
+                <div class="option-group">
+                    <label for="custom-qr">Number of Random QRs</label>
+                    <input type="number" id="custom-qr" placeholder="e.g. 5">
                 </div>
 
-                <button id="generate-btn" class="btn-primary">Generate</button>
+                <div class="option-group">
+                    <label for="logo-upload" class="file-label">Upload Custom Image</label>
+                    <input type="file" id="logo-upload" accept="image/*" class="file-input">
+                </div>
             </div>
 
-            <div class="output-section" id="output">
-                <h2>Generated QR Codes</h2>
-                <div class="qr-container"></div>
-                <button id="export-btn" class="btn-secondary" disabled>Export as ZIP</button>
-            </div>
+            <button id="generate-btn" class="btn-primary">Generate</button>
+        </div>
+
+        <!-- Output Section -->
+        <div class="card output-section">
+            <h2>Generated QR Codes</h2>
+            <div class="qr-container"></div>
+            <button id="export-btn" class="btn-export" disabled>Export as ZIP</button>
         </div>
     </div>
 
