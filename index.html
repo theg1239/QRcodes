@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Generator</title>
+    <title>High-Resolution QR Code Generator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,30 +16,33 @@
                 <div class="options">
                     <div class="option-group">
                         <label for="custom-qr">Number of Random QRs</label>
-                        <input type="number" id="custom-qr" placeholder="e.g. 5">
+                        <input type="number" id="custom-qr" placeholder="e.g. 5" min="0">
                     </div>
-    
+
                     <div class="option-group">
                         <label for="logo-upload">Upload Custom Image (Optional)</label>
                         <input type="file" id="logo-upload" accept="image/*">
                     </div>
                 </div>
-    
+
                 <button id="generate-btn" class="btn-primary">Generate</button>
             </div>
         </div>
-    
+
         <div class="card output-section">
             <h2>Generated QR Codes</h2>
-            <div class="qr-container"></div>
+            <div class="qr-container" id="qr-container"></div>
             <button id="export-btn" class="btn-export" disabled>Export as ZIP</button>
         </div>
     </div>
-    
 
+    <!-- Include QRCode.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <!-- Include JSZip and FileSaver.js for ZIP Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Include the Script -->
     <script src="script.js"></script>
 </body>
 </html>
+    
