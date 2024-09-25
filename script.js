@@ -1,5 +1,3 @@
-// script.js
-
 // Event listeners for Generate and Export buttons
 document.getElementById('generate-btn').addEventListener('click', generateQRCodes);
 document.getElementById('export-btn').addEventListener('click', exportAsZip);
@@ -13,7 +11,6 @@ let generatedQRCodes = [];
 async function generateQRCodes() {
     const inputText = document.getElementById('input-text').value.trim();
     const numberOfQRs = parseInt(document.getElementById('custom-qr').value) || 0;
-    const logoFile = document.getElementById('logo-upload').files[0];
     const qrContainer = document.getElementById('qr-container');
 
     // Clear previous QR codes and reset the export button
@@ -37,16 +34,10 @@ async function generateQRCodes() {
         }
     }
 
-    // Load the logo if provided
-    let logoDataUrl = null;
-    if (logoFile) {
-        logoDataUrl = await readFileAsDataURL(logoFile);
-    }
-
-    // Generate QR codes sequentially to handle large resolutions efficiently
+    // Generate QR codes sequentially to ensure scannability
     for (let i = 0; i < texts.length; i++) {
         const text = texts[i];
-        const qrDataUrl = await createHighResQrCode(text, logoDataUrl);
+        const qrDataUrl = await createHighResQrCode(text);
         displayQrCode(`QR_${i + 1}`, text, qrDataUrl);
         generatedQRCodes.push({ name: `QR_${i + 1}.png`, data: qrDataUrl });
     }
@@ -72,45 +63,26 @@ function generateRandomString(length) {
 }
 
 /**
- * Reads a File object as a Data URL.
- * @param {File} file 
- * @returns {Promise<string>}
- */
-function readFileAsDataURL(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            resolve(event.target.result);
-        };
-        reader.onerror = function(error) {
-            reject(error);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-/**
- * Creates a high-resolution QR code with optional logo.
+ * Creates a high-resolution QR code focused on scannability.
  * @param {string} text 
- * @param {string|null} logoDataUrl 
  * @returns {Promise<string>} Data URL of the QR code image
  */
-function createHighResQrCode(text, logoDataUrl) {
+function createHighResQrCode(text) {
     return new Promise((resolve) => {
         // Initialize QR Code with high error correction
-        const qr = qrcode(0, 'H');
+        const qr = qrcode(0, 'H');  // 'H' ensures high error correction (30%)
         qr.addData(text);
         qr.make();
 
-        // Define high resolution (e.g., 4096x4096 pixels)
-        const size = 4096;
+        // Define optimal resolution (e.g., 1024x1024 pixels)
+        const size = 1024;
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
 
         // Fill background
-        ctx.fillStyle = '#FFFFFF'; // White background
+        ctx.fillStyle = '#FFFFFF'; // White background for contrast
         ctx.fillRect(0, 0, size, size);
 
         // Draw QR code
@@ -119,33 +91,12 @@ function createHighResQrCode(text, logoDataUrl) {
 
         for (let row = 0; row < qr.getModuleCount(); row++) {
             for (let col = 0; col < qr.getModuleCount(); col++) {
-                ctx.fillStyle = qr.isDark(row, col) ? '#000000' : '#FFFFFF';
+                ctx.fillStyle = qr.isDark(row, col) ? '#000000' : '#FFFFFF';  // Ensure black and white contrast
                 ctx.fillRect(col * tileW, row * tileH, tileW, tileH);
             }
         }
 
-        // If logo is provided, draw it at the center
-        if (logoDataUrl) {
-            const logo = new Image();
-            logo.src = logoDataUrl;
-            logo.onload = function() {
-                const logoSize = size / 6; // Adjust logo size as needed
-                ctx.drawImage(
-                    logo,
-                    (size - logoSize) / 2,
-                    (size - logoSize) / 2,
-                    logoSize,
-                    logoSize
-                );
-                resolve(canvas.toDataURL('image/png'));
-            };
-            logo.onerror = function() {
-                console.error('Failed to load the logo image.');
-                resolve(canvas.toDataURL('image/png'));
-            };
-        } else {
-            resolve(canvas.toDataURL('image/png'));
-        }
+        resolve(canvas.toDataURL('image/png'));  // Return QR code as data URL
     });
 }
 
