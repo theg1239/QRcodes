@@ -90,7 +90,7 @@ function readFileAsDataURL(file) {
 }
 
 /**
- * Creates a high-resolution QR code with optional logo.
+ * Creates a high-resolution QR code with optional logo and margin.
  * @param {string} text 
  * @param {string|null} logoDataUrl 
  * @returns {Promise<string>} Data URL of the QR code image
@@ -102,25 +102,28 @@ function createHighResQrCode(text, logoDataUrl) {
         qr.addData(text);
         qr.make();
 
-        // Define high resolution (e.g., 4096x4096 pixels)
+        // Define high resolution (e.g., 4096x4096 pixels) and margin
         const size = 4096;
+        const margin = 256;  // Adjust the margin size as needed
+        const canvasSizeWithMargin = size + margin * 2;
+
         const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
+        canvas.width = canvasSizeWithMargin;
+        canvas.height = canvasSizeWithMargin;
         const ctx = canvas.getContext('2d');
 
-        // Fill background
-        ctx.fillStyle = '#FFFFFF'; // White background
-        ctx.fillRect(0, 0, size, size);
+        // Fill the background (white) including margin
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvasSizeWithMargin, canvasSizeWithMargin);
 
-        // Draw QR code
+        // Draw the QR code inside the margin
         const tileW = size / qr.getModuleCount();
         const tileH = size / qr.getModuleCount();
 
         for (let row = 0; row < qr.getModuleCount(); row++) {
             for (let col = 0; col < qr.getModuleCount(); col++) {
                 ctx.fillStyle = qr.isDark(row, col) ? '#000000' : '#FFFFFF';
-                ctx.fillRect(col * tileW, row * tileH, tileW, tileH);
+                ctx.fillRect(margin + col * tileW, margin + row * tileH, tileW, tileH);
             }
         }
 
@@ -129,11 +132,11 @@ function createHighResQrCode(text, logoDataUrl) {
             const logo = new Image();
             logo.src = logoDataUrl;
             logo.onload = function() {
-                const logoSize = size / 6; // Adjust logo size as needed
+                const logoSize = size / 6;  // Adjust logo size as needed
                 ctx.drawImage(
                     logo,
-                    (size - logoSize) / 2,
-                    (size - logoSize) / 2,
+                    (canvasSizeWithMargin - logoSize) / 2,
+                    (canvasSizeWithMargin - logoSize) / 2,
                     logoSize,
                     logoSize
                 );
@@ -148,6 +151,7 @@ function createHighResQrCode(text, logoDataUrl) {
         }
     });
 }
+
 
 /**
  * Displays a generated QR code in the output section.
