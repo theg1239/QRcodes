@@ -1,5 +1,3 @@
-// script.js
-
 // Event listeners for Generate and Export buttons
 document.getElementById('generate-btn').addEventListener('click', generateQRCodes);
 document.getElementById('export-btn').addEventListener('click', exportAsZip);
@@ -13,7 +11,6 @@ let generatedQRCodes = [];
 async function generateQRCodes() {
     const inputText = document.getElementById('input-text').value.trim();
     const numberOfQRs = parseInt(document.getElementById('custom-qr').value) || 0;
-    const logoFile = document.getElementById('logo-upload').files[0];
     const qrContainer = document.getElementById('qr-container');
 
     // Clear previous QR codes and reset the export button
@@ -37,16 +34,10 @@ async function generateQRCodes() {
         }
     }
 
-    // Load the logo if provided
-    let logoDataUrl = null;
-    if (logoFile) {
-        logoDataUrl = await readFileAsDataURL(logoFile);
-    }
-
-    // Generate QR codes sequentially to handle large resolutions efficiently
+    // Generate QR codes sequentially to ensure scannability
     for (let i = 0; i < texts.length; i++) {
         const text = texts[i];
-        const qrDataUrl = await createHighResQrCode(text, logoDataUrl);
+        const qrDataUrl = await createHighResQrCode(text);
         displayQrCode(`QR_${i + 1}`, text, qrDataUrl);
         generatedQRCodes.push({ name: `QR_${i + 1}.png`, data: qrDataUrl });
     }
@@ -92,29 +83,25 @@ function readFileAsDataURL(file) {
 /**
  * Creates a high-resolution QR code with optional logo and margin.
  * @param {string} text 
- * @param {string|null} logoDataUrl 
  * @returns {Promise<string>} Data URL of the QR code image
  */
-function createHighResQrCode(text, logoDataUrl) {
+function createHighResQrCode(text) {
     return new Promise((resolve) => {
         // Initialize QR Code with high error correction
-        const qr = qrcode(0, 'H');
+        const qr = qrcode(0, 'H');  // 'H' ensures high error correction (30%)
         qr.addData(text);
         qr.make();
 
-        // Define high resolution (e.g., 4096x4096 pixels) and margin
+        // Define high resolution (e.g., 4096x4096 pixels)
         const size = 4096;
-        const margin = 256;  // Adjust the margin size as needed
-        const canvasSizeWithMargin = size + margin * 2;
-
         const canvas = document.createElement('canvas');
         canvas.width = canvasSizeWithMargin;
         canvas.height = canvasSizeWithMargin;
         const ctx = canvas.getContext('2d');
 
-        // Fill the background (white) including margin
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvasSizeWithMargin, canvasSizeWithMargin);
+        // Fill background
+        ctx.fillStyle = '#FFFFFF'; // White background
+        ctx.fillRect(0, 0, size, size);
 
         // Draw the QR code inside the margin
         const tileW = size / qr.getModuleCount();
@@ -123,7 +110,7 @@ function createHighResQrCode(text, logoDataUrl) {
         for (let row = 0; row < qr.getModuleCount(); row++) {
             for (let col = 0; col < qr.getModuleCount(); col++) {
                 ctx.fillStyle = qr.isDark(row, col) ? '#000000' : '#FFFFFF';
-                ctx.fillRect(margin + col * tileW, margin + row * tileH, tileW, tileH);
+                ctx.fillRect(col * tileW, row * tileH, tileW, tileH);
             }
         }
 
@@ -132,11 +119,11 @@ function createHighResQrCode(text, logoDataUrl) {
             const logo = new Image();
             logo.src = logoDataUrl;
             logo.onload = function() {
-                const logoSize = size / 6;  // Adjust logo size as needed
+                const logoSize = size / 6; // Adjust logo size as needed
                 ctx.drawImage(
                     logo,
-                    (canvasSizeWithMargin - logoSize) / 2,
-                    (canvasSizeWithMargin - logoSize) / 2,
+                    (size - logoSize) / 2,
+                    (size - logoSize) / 2,
                     logoSize,
                     logoSize
                 );
