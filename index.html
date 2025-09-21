@@ -23,6 +23,14 @@
                         <label for="logo-upload">Upload Custom Image (Optional)</label>
                         <input type="file" id="logo-upload" accept="image/*">
                     </div>
+
+                    <div class="option-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="prefix-enabled" class="checkbox">
+                            <label for="prefix-enabled" class="checkbox-label">Add URL Prefix to QR Codes</label>
+                        </div>
+                        <input type="text" id="prefix-url" placeholder="e.g. https://example.com/" disabled>
+                    </div>
                 </div>
 
                 <button id="generate-btn" class="btn-primary">Generate</button>
@@ -46,6 +54,15 @@
         // Event listeners for Generate and Export buttons
         document.getElementById('generate-btn').addEventListener('click', generateQRCodes);
         document.getElementById('export-btn').addEventListener('click', exportAsZip);
+
+        // Event listener for prefix checkbox
+        document.getElementById('prefix-enabled').addEventListener('change', function() {
+            const prefixInput = document.getElementById('prefix-url');
+            prefixInput.disabled = !this.checked;
+            if (!this.checked) {
+                prefixInput.value = '';
+            }
+        });
     
         // Array to store generated QR codes
         let generatedQRCodes = [];
@@ -56,6 +73,8 @@
         async function generateQRCodes() {
             const inputText = document.getElementById('input-text').value.trim();
             const numberOfQRs = parseInt(document.getElementById('custom-qr').value) || 0;
+            const prefixEnabled = document.getElementById('prefix-enabled').checked;
+            const prefixUrl = document.getElementById('prefix-url').value.trim();
             const qrContainer = document.getElementById('qr-container');
     
             // Clear previous QR codes and reset the export button
@@ -67,15 +86,28 @@
                 alert('Please enter some text or specify the number of random QR codes to generate.');
                 return;
             }
+
+            // Validate prefix URL if enabled
+            if (prefixEnabled && !prefixUrl) {
+                alert('Please enter a prefix URL or disable the prefix option.');
+                return;
+            }
     
             // Split input text into lines and filter out empty lines
             let texts = inputText.split('\n').map(line => line.trim()).filter(line => line !== '');
+
+            // Apply prefix to each text if enabled
+            if (prefixEnabled && prefixUrl) {
+                texts = texts.map(text => prefixUrl + text);
+            }
     
             // Generate additional random QR codes if specified
             if (numberOfQRs > texts.length) {
                 const additional = numberOfQRs - texts.length;
                 for (let i = 0; i < additional; i++) {
-                    texts.push(generateRandomString(16));
+                    const randomString = generateRandomString(16);
+                    const finalText = prefixEnabled && prefixUrl ? prefixUrl + randomString : randomString;
+                    texts.push(finalText);
                 }
             }
     
@@ -102,7 +134,7 @@
          * @returns {string}
          */
         function generateRandomString(length) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
             for (let i = 0; i < length; i++ ) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));

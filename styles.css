@@ -87,6 +87,39 @@ textarea::placeholder {
     color: #f0f0f0;
 }
 
+.option-group input:disabled {
+    background-color: #1a1a1a;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.option-group input::placeholder {
+    color: #a0a0a0;
+}
+
+/* Checkbox Styling */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+.checkbox {
+    width: 18px !important;
+    height: 18px;
+    accent-color: #007bff;
+    cursor: pointer;
+}
+
+.checkbox-label {
+    font-size: 14px;
+    color: #f0f0f0;
+    cursor: pointer;
+    margin-bottom: 0 !important;
+    display: inline !important;
+}
+
 /* Buttons */
 .button-group {
     display: flex;
