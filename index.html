@@ -1,236 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cryptic QR Gen</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cryptic QR Gen</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root{
+      --bg:#181818;
+      --card:#1f1f1f;
+      --text:#eeeeee;
+      --sub:#bbbbbb;
+      --accent:#F25D38;
+      --accent2:#F7863C;
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    .container{max-width:1100px;margin:24px auto;padding:0 16px;display:grid;gap:16px;grid-template-columns:1fr 1fr}
+    .card{background:var(--card);border:1px solid #2a2a2a;border-radius:12px;padding:18px}
+    h2{margin:0 0 12px}
+    textarea,input,select{width:100%;background:#121212;color:var(--text);border:1px solid #2b2b2b;border-radius:8px;padding:10px}
+    .btn-primary,.btn-export{border:0;border-radius:10px;padding:12px 16px;color:#fff;cursor:pointer}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));}
+    .btn-export{background:#2a2a2a}
+    .btn-export:disabled{opacity:.5;cursor:not-allowed}
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .option-group{display:flex;flex-direction:column;gap:6px}
+    .checkbox-group{display:flex;align-items:center;gap:8px}
+    .qr-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:12px}
+    .qr-item{background:#0d0d0d;border:1px solid #262626;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px}
+    .qr-text{font-size:.86rem;color:var(--sub);word-break:break-all}
+    .row{display:flex;gap:12px}
+    .row > *{flex:1}
+    img.qr{width:100%;height:auto;border-radius:10px;display:block}
+    .pill{display:flex;gap:8px}
+    .pill > *{flex:1}
+    label.small{font-size:.85rem;color:#bdbdbd}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="input-section">
-                <h2>QR Code Generator</h2>
-                <textarea id="input-text" rows="5" placeholder="Enter links or text (one per line)..."></textarea>
-                
-                <div class="options">
-                    <div class="option-group">
-                        <label for="custom-qr">Number of Random QRs</label>
-                        <input type="number" id="custom-qr" placeholder="e.g. 5" min="0">
-                    </div>
+  <div class="container">
+    <div class="card">
+      <div class="input-section">
+        <h2>QR Code Generator</h2>
+        <textarea id="input-text" rows="5" placeholder="Enter links or text (one per line)..."></textarea>
 
-                    <div class="option-group">
-                        <label for="logo-upload">Upload Custom Image (Optional)</label>
-                        <input type="file" id="logo-upload" accept="image/*">
-                    </div>
+        <div class="options">
+          <div class="option-group">
+            <label for="custom-qr">Number of Random QRs</label>
+            <input type="number" id="custom-qr" placeholder="e.g. 5" min="0">
+          </div>
 
-                    <div class="option-group">
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="prefix-enabled" class="checkbox">
-                            <label for="prefix-enabled" class="checkbox-label">Add URL Prefix to QR Codes</label>
-                        </div>
-                        <input type="text" id="prefix-url" placeholder="e.g. https://example.com/" disabled>
-                    </div>
-                </div>
+          <div class="option-group">
+            <label for="logo-upload">Upload Custom Image (Optional)</label>
+            <input type="file" id="logo-upload" accept="image/*">
+            <label class="small">Logo size % (of QR)</label>
+            <input type="number" id="logo-size" min="5" max="40" value="18">
+          </div>
 
-                <button id="generate-btn" class="btn-primary">Generate</button>
+          <div class="option-group">
+            <div class="checkbox-group">
+              <input type="checkbox" id="prefix-enabled" class="checkbox">
+              <label for="prefix-enabled" class="checkbox-label">Add URL Prefix to QR Codes</label>
             </div>
+            <input type="text" id="prefix-url" placeholder="e.g. https://example.com/" disabled>
+          </div>
+
+          <div class="option-group">
+            <label>Module Shape</label>
+            <select id="module-shape">
+              <option value="rounded" selected>Rounded</option>
+              <option value="square">Square</option>
+              <option value="circle">Circle</option>
+            </select>
+            <label class="small">Roundness (0–0.5 for rounded)</label>
+            <input type="number" id="roundness" step="0.05" min="0" max="0.5" value="0.35">
+          </div>
+
+          <div class="option-group">
+            <label>Page Background</label>
+            <input type="color" id="page-bg" value="#181818">
+            <label class="small">Quiet Zone (px)</label>
+            <input type="number" id="quiet-zone" min="0" max="256" value="64">
+          </div>
+
+          <div class="option-group">
+            <label>Gradient Start</label>
+            <input type="color" id="grad-start" value="#F25D38">
+            <label>Gradient End</label>
+            <input type="color" id="grad-end" value="#F7863C">
+          </div>
+
+          <div class="option-group">
+            <div class="checkbox-group">
+              <input type="checkbox" id="show-border" checked>
+              <label for="show-border">Show Rounded Border</label>
+            </div>
+            <div class="row">
+              <input type="number" id="border-width" min="0" max="40" value="10" placeholder="Border width">
+              <input type="number" id="border-radius" min="0" max="120" value="20" placeholder="Border radius">
+            </div>
+          </div>
+
+          <div class="option-group">
+            <label>Canvas Size (px)</label>
+            <input type="number" id="canvas-size" min="512" max="4096" value="1536">
+          </div>
         </div>
 
-        <div class="card output-section">
-            <h2>Generated QR Codes</h2>
-            <div class="qr-container" id="qr-container"></div>
-            <button id="export-btn" class="btn-export" disabled>Export as ZIP</button>
+        <div class="pill" style="margin-top:10px">
+          <button id="generate-btn" class="btn-primary">Generate</button>
+          <button id="export-btn" class="btn-export" disabled>Export as ZIP</button>
         </div>
+      </div>
     </div>
 
-    <!-- Include QRCode.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-    <!-- Include JSZip and FileSaver.js for ZIP Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <div class="card output-section">
+      <h2>Generated QR Codes</h2>
+      <div class="qr-container" id="qr-container"></div>
+    </div>
+  </div>
 
-    <script>
-        // Event listeners for Generate and Export buttons
-        document.getElementById('generate-btn').addEventListener('click', generateQRCodes);
-        document.getElementById('export-btn').addEventListener('click', exportAsZip);
+  <!-- Libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-        // Event listener for prefix checkbox
-        document.getElementById('prefix-enabled').addEventListener('change', function() {
-            const prefixInput = document.getElementById('prefix-url');
-            prefixInput.disabled = !this.checked;
-            if (!this.checked) {
-                prefixInput.value = '';
+  <script>
+    document.getElementById('generate-btn').addEventListener('click', generateQRCodes);
+    document.getElementById('export-btn').addEventListener('click', exportAsZip);
+    document.getElementById('prefix-enabled').addEventListener('change', function () {
+      const prefixInput = document.getElementById('prefix-url');
+      prefixInput.disabled = !this.checked;
+      if (!this.checked) prefixInput.value = '';
+    });
+
+    let generatedQRCodes = [];
+    let uploadedLogoImage = null;
+
+    // Cache the uploaded logo (as Image) once
+    document.getElementById('logo-upload').addEventListener('change', async (e) => {
+      const f = e.target.files?.[0];
+      if (!f) { uploadedLogoImage = null; return; }
+      const dataUrl = await fileToDataUrl(f);
+      uploadedLogoImage = await dataUrlToImage(dataUrl);
+    });
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result);
+        fr.onerror = reject;
+        fr.readAsDataURL(file);
+      });
+    }
+    function dataUrlToImage(dataUrl) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = dataUrl;
+      });
+    }
+
+    async function generateQRCodes() {
+      const inputText = document.getElementById('input-text').value.trim();
+      const numberOfQRs = parseInt(document.getElementById('custom-qr').value) || 0;
+
+      const prefixEnabled = document.getElementById('prefix-enabled').checked;
+      const prefixUrl = document.getElementById('prefix-url').value.trim();
+
+      const qrContainer = document.getElementById('qr-container');
+      qrContainer.innerHTML = '';
+      document.getElementById('export-btn').disabled = true;
+      generatedQRCodes = [];
+
+      if (!inputText && numberOfQRs <= 0) {
+        alert('Please enter some text or specify the number of random QR codes to generate.');
+        return;
+      }
+      if (prefixEnabled && !prefixUrl) {
+        alert('Please enter a prefix URL or disable the prefix option.');
+        return;
+      }
+
+      // Collect options
+      const options = {
+        size: parseInt(document.getElementById('canvas-size').value) || 1536,
+        quietZone: parseInt(document.getElementById('quiet-zone').value) || 64,
+        pageBg: document.getElementById('page-bg').value || '#181818',
+        gradStart: document.getElementById('grad-start').value || '#F25D38',
+        gradEnd: document.getElementById('grad-end').value || '#F7863C',
+        moduleShape: document.getElementById('module-shape').value,
+        roundness: parseFloat(document.getElementById('roundness').value) || 0.35,
+        showBorder: document.getElementById('show-border').checked,
+        borderWidth: parseInt(document.getElementById('border-width').value) || 10,
+        borderRadius: parseInt(document.getElementById('border-radius').value) || 20,
+        logoImage: uploadedLogoImage,
+        logoSizePct: Math.min(40, Math.max(5, parseInt(document.getElementById('logo-size').value) || 18))
+      };
+
+      // Prepare text lines
+      let texts = inputText.split('\n').map(s => s.trim()).filter(Boolean);
+      if (prefixEnabled && prefixUrl) texts = texts.map(t => prefixUrl + t);
+
+      // Fill with random ones if needed
+      if (numberOfQRs > texts.length) {
+        const add = numberOfQRs - texts.length;
+        for (let i = 0; i < add; i++) {
+          const rnd = generateRandomString(16);
+          texts.push(prefixEnabled && prefixUrl ? prefixUrl + rnd : rnd);
+        }
+      }
+
+      // Generate sequentially for stability
+      for (let i = 0; i < texts.length; i++) {
+        const text = texts[i];
+        const dataUrl = await createStyledQrCode(text, options);
+
+        const sanitized = text.replace(/[^a-zA-Z0-9]/g, '_');
+        displayQrCode(sanitized, text, dataUrl);
+        generatedQRCodes.push({ name: `${sanitized}.png`, data: dataUrl });
+      }
+
+      if (generatedQRCodes.length > 0) {
+        document.getElementById('export-btn').disabled = false;
+      }
+    }
+
+    function generateRandomString(length) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let out = '';
+      for (let i = 0; i < length; i++) out += chars[(Math.random() * chars.length) | 0];
+      return out;
+    }
+
+    // ======== Styled QR renderer ========
+    function createStyledQrCode(text, opts) {
+      return new Promise((resolve) => {
+        const qr = qrcode(0, 'H'); // High error correction
+        qr.addData(text);
+        qr.make();
+
+        const modules = qr.getModuleCount();
+        const size = opts.size;
+        const quiet = opts.quietZone;
+        const canvas = document.createElement('canvas');
+        canvas.width = size + quiet * 2;
+        canvas.height = size + quiet * 2;
+        const ctx = canvas.getContext('2d');
+
+        // Page background
+        ctx.fillStyle = opts.pageBg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Linear gradient paint (foreground)
+        const grad = ctx.createLinearGradient(quiet, quiet, quiet + size, quiet + size);
+        grad.addColorStop(0, opts.gradStart);
+        grad.addColorStop(1, opts.gradEnd);
+
+        // Border (optional)
+        if (opts.showBorder && opts.borderWidth > 0) {
+          ctx.lineWidth = opts.borderWidth;
+          ctx.strokeStyle = grad;
+          roundedRect(ctx, quiet * 0.4, quiet * 0.4, size + quiet * 1.2, size + quiet * 1.2, opts.borderRadius);
+          ctx.stroke();
+        }
+
+        // Compute tile size
+        const tile = size / modules;
+
+        // Don’t paint inside the three finder patterns now; we’ll draw them custom
+        const isInFinder = (r, c) => {
+          const inTL = r < 7 && c < 7;
+          const inTR = r < 7 && c >= modules - 7;
+          const inBL = r >= modules - 7 && c < 7;
+          return inTL || inTR || inBL;
+        };
+
+        // Paint data modules
+        for (let r = 0; r < modules; r++) {
+          for (let c = 0; c < modules; c++) {
+            if (isInFinder(r, c)) continue;
+            if (qr.isDark(r, c)) {
+              drawModule(ctx, grad,
+                quiet + c * tile,
+                quiet + r * tile,
+                tile, opts.moduleShape, opts.roundness);
             }
+          }
+        }
+
+        // Draw rounded finder patterns
+        const fp = [
+          { r: 0, c: 0 },
+          { r: 0, c: modules - 7 },
+          { r: modules - 7, c: 0 }
+        ];
+        fp.forEach(({ r, c }) => {
+          drawFinder(ctx, quiet + c * tile, quiet + r * tile, tile, grad, opts);
         });
-    
-        // Array to store generated QR codes
-        let generatedQRCodes = [];
-    
-        /**
-         * Generates QR Codes based on user input and options.
-         */
-        async function generateQRCodes() {
-            const inputText = document.getElementById('input-text').value.trim();
-            const numberOfQRs = parseInt(document.getElementById('custom-qr').value) || 0;
-            const prefixEnabled = document.getElementById('prefix-enabled').checked;
-            const prefixUrl = document.getElementById('prefix-url').value.trim();
-            const qrContainer = document.getElementById('qr-container');
-    
-            // Clear previous QR codes and reset the export button
-            qrContainer.innerHTML = '';
-            document.getElementById('export-btn').disabled = true;
-            generatedQRCodes = [];
-    
-            if (!inputText && numberOfQRs <= 0) {
-                alert('Please enter some text or specify the number of random QR codes to generate.');
-                return;
-            }
 
-            // Validate prefix URL if enabled
-            if (prefixEnabled && !prefixUrl) {
-                alert('Please enter a prefix URL or disable the prefix option.');
-                return;
-            }
-    
-            // Split input text into lines and filter out empty lines
-            let texts = inputText.split('\n').map(line => line.trim()).filter(line => line !== '');
+        // Optional centered logo
+        if (opts.logoImage) {
+          drawCenteredLogo(ctx, canvas.width, canvas.height, opts.logoImage, opts.logoSizePct);
+        }
 
-            // Apply prefix to each text if enabled
-            if (prefixEnabled && prefixUrl) {
-                texts = texts.map(text => prefixUrl + text);
-            }
-    
-            // Generate additional random QR codes if specified
-            if (numberOfQRs > texts.length) {
-                const additional = numberOfQRs - texts.length;
-                for (let i = 0; i < additional; i++) {
-                    const randomString = generateRandomString(16);
-                    const finalText = prefixEnabled && prefixUrl ? prefixUrl + randomString : randomString;
-                    texts.push(finalText);
-                }
-            }
-    
-            // Generate QR codes sequentially to ensure scannability
-            for (let i = 0; i < texts.length; i++) {
-                const text = texts[i];
-                const qrDataUrl = await createHighResQrCode(text);
-                
-                // Use the input string to name the file (replacing invalid characters with underscores)
-                const sanitizedText = text.replace(/[^a-zA-Z0-9]/g, '_'); // Replace invalid characters with '_'
-                displayQrCode(sanitizedText, text, qrDataUrl);
-                generatedQRCodes.push({ name: `${sanitizedText}.png`, data: qrDataUrl });
-            }
-    
-            // Enable the export button if QR codes are generated
-            if (generatedQRCodes.length > 0) {
-                document.getElementById('export-btn').disabled = false;
-            }
-        }
-    
-        /**
-         * Generates a random alphanumeric string of given length.
-         * @param {number} length 
-         * @returns {string}
-         */
-        function generateRandomString(length) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++ ) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
-    
-        /**
-         * Creates a high-resolution QR code with margin.
-         * @param {string} text 
-         * @returns {Promise<string>} Data URL of the QR code image
-         */
-        function createHighResQrCode(text) {
-            return new Promise((resolve) => {
-                // Initialize QR Code with high error correction
-                const qr = qrcode(0, 'H');  // 'H' ensures high error correction (30%)
-                qr.addData(text);
-                qr.make();
-    
-                // Define high resolution (e.g., 4096x4096 pixels) and margin
-                const size = 4096;
-                const margin = 256;  // Define margin size as needed
-                const canvasSizeWithMargin = size + margin * 2;
-    
-                const canvas = document.createElement('canvas');
-                canvas.width = canvasSizeWithMargin;
-                canvas.height = canvasSizeWithMargin;
-                const ctx = canvas.getContext('2d');
-    
-                // Fill background including margin
-                ctx.fillStyle = '#FFFFFF'; // White background
-                ctx.fillRect(0, 0, canvasSizeWithMargin, canvasSizeWithMargin);
-    
-                // Draw the QR code inside the margin
-                const tileW = size / qr.getModuleCount();
-                const tileH = size / qr.getModuleCount();
-    
-                for (let row = 0; row < qr.getModuleCount(); row++) {
-                    for (let col = 0; col < qr.getModuleCount(); col++) {
-                        ctx.fillStyle = qr.isDark(row, col) ? '#000000' : '#FFFFFF';
-                        ctx.fillRect(margin + col * tileW, margin + row * tileH, tileW, tileH);
-                    }
-                }
-    
-                resolve(canvas.toDataURL('image/png'));  // Return QR code as data URL
-            });
-        }
-    
-        /**
-         * Displays a generated QR code in the output section.
-         * @param {string} label 
-         * @param {string} text 
-         * @param {string} dataUrl 
-         */
-        function displayQrCode(label, text, dataUrl) {
-            const qrContainer = document.getElementById('qr-container');
-    
-            const qrItem = document.createElement('div');
-            qrItem.classList.add('qr-item');
-    
-            const qrText = document.createElement('div');
-            qrText.classList.add('qr-text');
-            qrText.innerText = `${label}: ${text}`;
-    
-            const qrImage = document.createElement('img');
-            qrImage.src = dataUrl;
-            qrImage.alt = `${label} Image`;
-    
-            qrItem.appendChild(qrText);
-            qrItem.appendChild(qrImage);
-            qrContainer.appendChild(qrItem);
-        }
-    
-        /**
-         * Exports all generated QR codes as a ZIP file.
-         */
-        function exportAsZip() {
-            if (generatedQRCodes.length === 0) {
-                alert('No QR codes to export.');
-                return;
-            }
-    
-            const zip = new JSZip();
-            const imgFolder = zip.folder("QR_Codes");
-    
-            generatedQRCodes.forEach(qr => {
-                // Remove the data URL prefix to get pure base64
-                const base64Data = qr.data.replace(/^data:image\/(png|jpg);base64,/, "");
-                imgFolder.file(qr.name, base64Data, {base64: true});
-            });
-    
-            zip.generateAsync({type:"blob"})
-            .then(function(content) {
-                saveAs(content, "QR_Codes.zip");
-            });
-        }
-    </script>
+        resolve(canvas.toDataURL('image/png'));
+      });
+    }
+
+    function drawModule(ctx, fill, x, y, s, shape, roundness) {
+      ctx.fillStyle = fill;
+      if (shape === 'square') {
+        ctx.fillRect(x, y, s, s);
+      } else if (shape === 'circle') {
+        const r = s * 0.5;
+        ctx.beginPath();
+        ctx.arc(x + r, y + r, r * 0.95, 0, Math.PI * 2);
+        ctx.fill();
+      } else { // rounded
+        const r = Math.min(s * roundness, s * 0.5);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + s - r, y);
+        ctx.quadraticCurveTo(x + s, y, x + s, y + r);
+        ctx.lineTo(x + s, y + s - r);
+        ctx.quadraticCurveTo(x + s, y + s, x + s - r, y + s);
+        ctx.lineTo(x + r, y + s);
+        ctx.quadraticCurveTo(x, y + s, x, y + s - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    function drawFinder(ctx, x, y, tile, fill, opts) {
+      const outer = 7 * tile;
+      const gap = 1 * tile;
+      const inner = 3 * tile;
+      const rad = Math.min(outer * 0.18, 24);
+
+      // Outer rounded square (stroke-like fill)
+      ctx.fillStyle = fill;
+      roundedRect(ctx, x, y, outer, outer, rad);
+      ctx.fill();
+
+      // Knock out inner white square (the 5x5 zone)
+      ctx.fillStyle = '#ffffff';
+      roundedRect(ctx, x + tile, y + tile, outer - 2 * tile, outer - 2 * tile, rad * 0.75);
+      ctx.fill();
+
+      // Dark 3x3 center
+      ctx.fillStyle = fill;
+      roundedRect(ctx, x + tile + gap, y + tile + gap, inner, inner, rad * 0.5);
+      ctx.fill();
+    }
+
+    function roundedRect(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.lineTo(x + w - rr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+      ctx.lineTo(x + w, y + h - rr);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+      ctx.lineTo(x + rr, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+      ctx.lineTo(x, y + rr);
+      ctx.quadraticCurveTo(x, y, x + rr, y);
+      ctx.closePath();
+    }
+
+    function drawCenteredLogo(ctx, W, H, img, sizePct) {
+      const target = Math.min(W, H) * (sizePct / 100);
+      const pad = target * 0.18; // white padding around logo
+      const box = target + pad * 2;
+
+      const x = (W - box) / 2;
+      const y = (H - box) / 2;
+
+      // White rounded box as backdrop (helps scannability)
+      ctx.fillStyle = '#ffffff';
+      roundedRect(ctx, x, y, box, box, Math.min(18, box * 0.2));
+      ctx.fill();
+
+      // Draw logo centered inside
+      const imgX = x + pad;
+      const imgY = y + pad;
+      ctx.drawImage(img, imgX, imgY, target, target);
+    }
+
+    function displayQrCode(label, text, dataUrl) {
+      const qrContainer = document.getElementById('qr-container');
+      const qrItem = document.createElement('div');
+      qrItem.classList.add('qr-item');
+
+      const qrText = document.createElement('div');
+      qrText.classList.add('qr-text');
+      qrText.innerText = `${label}: ${text}`;
+
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.alt = `${label} Image`;
+      img.className = 'qr';
+
+      qrItem.appendChild(qrText);
+      qrItem.appendChild(img);
+      qrContainer.appendChild(qrItem);
+    }
+
+    function exportAsZip() {
+      if (generatedQRCodes.length === 0) { alert('No QR codes to export.'); return; }
+
+      const zip = new JSZip();
+      const imgFolder = zip.folder("QR_Codes");
+      generatedQRCodes.forEach(qr => {
+        const base64Data = qr.data.replace(/^data:image\/(png|jpg);base64,/, "");
+        imgFolder.file(qr.name, base64Data, { base64: true });
+      });
+
+      zip.generateAsync({ type: "blob" })
+        .then(content => saveAs(content, "QR_Codes.zip"));
+    }
+  </script>
 </body>
-</html>    
+</html>
